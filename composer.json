@@ -1,0 +1,25 @@
+{
+  "name": "digitalstars/database",
+  "description": "Library for easy work with databases",
+  "license": "MIT",
+  "minimum-stability": "stable",
+  "authors": [
+    {
+      "name": "ZeRoX",
+      "email": "as234zx15@yandex.ru"
+    },
+    {
+      "name": "Runnin",
+      "email": "mr.kirilll12@mail.ru"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "ext-pdo": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "DigitalStars\\database\\": "src/"
+    }
+  }
+}
