@@ -30,17 +30,17 @@ class DataBase extends \PDO {
         return parent::prepare(count($args) == 0 ? $statement : $this->parse($statement, $args), $driver_options);
     }
 
-    public function rows($sql, $args = [], $fetchMode = PDO::FETCH_OBJ) {
+    public function rows($sql, $args = [], $fetchMode = PDO::FETCH_ASSOC) {
         $result = $this->query($sql, $args);
         return $result !== false ? $result->fetchAll($fetchMode) : $result;
     }
 
-    public function row($sql, $args = [], $fetchMode = PDO::FETCH_OBJ) {
+    public function row($sql, $args = [], $fetchMode = PDO::FETCH_ASSOC) {
         $result = $this->query($sql, $args);
         return $result !== false ? $result->fetch($fetchMode) : $result;
     }
 
-    public function getById($table, $id, $fetchMode = PDO::FETCH_OBJ) {
+    public function getById($table, $id, $fetchMode = PDO::FETCH_ASSOC) {
         $result = $this->query("SELECT * FROM ?f WHERE id = ?i", [$table, $id]);
         return $result !== false ? $result->fetch($fetchMode) : $result;
     }
