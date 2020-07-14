@@ -36,7 +36,8 @@ class DataBase extends \PDO {
     }
 
     public function row($sql, $args = [], $fetchMode = PDO::FETCH_OBJ) {
-        return $this->query($sql, $args)->fetch($fetchMode);
+        $result = $this->query($sql, $args)->fetch($fetchMode);
+        return $result !== false ? $result->fetch($fetchMode) : $result;
     }
 
     public function getById($table, $id, $fetchMode = PDO::FETCH_OBJ) {
