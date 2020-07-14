@@ -31,7 +31,8 @@ class DataBase extends \PDO {
     }
 
     public function rows($sql, $args = [], $fetchMode = PDO::FETCH_OBJ) {
-        return $this->query($sql, $args)->fetchAll($fetchMode);
+        $result = $this->query($sql, $args);
+        return $result !== false ? $result->fetchAll($fetchMode) : $result;
     }
 
     public function row($sql, $args = [], $fetchMode = PDO::FETCH_OBJ) {
@@ -39,16 +40,18 @@ class DataBase extends \PDO {
     }
 
     public function getById($table, $id, $fetchMode = PDO::FETCH_OBJ) {
-        return $this->query("SELECT * FROM ?f WHERE id = ?i", [$table, $id])->fetch($fetchMode);
+        $result = $this->query("SELECT * FROM ?f WHERE id = ?i", [$table, $id]);
+        return $result !== false ? $result->fetch($fetchMode) : $result;
     }
 
     public function count($sql, $args = []) {
-        return $this->query($sql, $args)->rowCount();
+        $result = $this->query($sql, $args);
+        return $result !== false ? $result->rowCount() : $result;
     }
 
     public function insert($table, $data) {
-        $this->query("INSERT INTO ?f (?af) VALUES (?as)", [$table, array_keys($data), array_values($data)]);
-        return $this->lastInsertId();
+        $result = $this->query("INSERT INTO ?f (?af) VALUES (?as)", [$table, array_keys($data), array_values($data)]);
+        return $result !== false ? $this->lastInsertId() : $result;
     }
 
     public function update($table, $data, $where) {
