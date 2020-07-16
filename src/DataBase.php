@@ -11,6 +11,10 @@ class DataBase extends \PDO {
         parent::__construct($dsn, $username, $passwd, $options);
     }
 
+    public static function create($dsn, $username = null, $passwd = null, $options = null) {
+        return new self($dsn, $username, $passwd, $options);
+    }
+
     public function exec($statement, $args = []) {
         return parent::exec(count($args) == 0 ? $statement : $this->parse($statement, $args));
     }
