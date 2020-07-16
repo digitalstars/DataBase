@@ -7,6 +7,7 @@ namespace DigitalStars\DataBase;
 trait Parser {
     private $args;
     private $original_query;
+    private $result_query;
     private $is_inner = false;
 
     public function parse($query, array $args) {
@@ -16,7 +17,12 @@ trait Parser {
         $anon = function ($v) {
             return $this->parse_part($v);
         };
-        return preg_replace_callback("!(\?[avw]\[.*?\])|(\?[avw]?[sidnf])!i", $anon, $query);
+        $this->result_query = preg_replace_callback("!(\?[avw]\[.*?\])|(\?[avw]?[sidnf])!i", $anon, $query);
+        return $this->result_query;
+    }
+
+    public function getQueryString() {
+        return $this->result_query;
     }
 
     private function parse_part($symbol, $value = null) {
