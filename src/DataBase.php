@@ -66,8 +66,11 @@ class DataBase extends \PDO {
             return $this->exec("UPDATE ?f SET ?As WHERE ?ws", [$table, $data, $where]);
     }
 
-    public function delete($table, $where, $limit = 1) {
-        return $this->exec("DELETE FROM ?f WHERE ?ws LIMIT ?i", [$table, $where, $limit]);
+    public function delete($table, $where, $limit = -1) {
+        if ($limit == -1)
+            return $this->exec("DELETE FROM ?f WHERE ?ws", [$table, $where]);
+        else
+            return $this->exec("DELETE FROM ?f WHERE ?ws LIMIT ?i", [$table, $where, $limit]);
     }
 
     public function deleteAll($table) {
