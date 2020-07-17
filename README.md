@@ -501,11 +501,11 @@ $row = $db->row("SELECT * FROM users WHERE age = ?i", [30]);
 
 ### getById($table, $id, $fetchMode = PDO::FETCH_ASSOC) : array | false
 
-Вернёт строку (вызов `PDOStatement::fetch`) с режимом выборки `$fetchMode` из таблицы `$table` где `id = $id`. Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
+Вернёт строку (вызов `PDOStatement::fetch`) с режимом выборки `$fetchMode` из таблицы `$table` ро правилу, описанному ниже. Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
 
-> Если `$id` - число, то вернёт запись, где `id = $id`
+* Если `$id` - число, то вернёт запись, где `id = $id`
 
-> Если `$id` - массив, то вернёт запись по WHERE, где ключи массив - названия полей, значения массива - значения полей
+* Если `$id` - массив, то вернёт запись по WHERE, где ключи массив - названия полей, значения массива - значения полей
 
 ```php
 use DigitalStars\DataBase;
