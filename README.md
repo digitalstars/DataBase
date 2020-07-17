@@ -1,5 +1,6 @@
 <p align="center">
-  <img alt="DataBase logo" title="DataBase это Библиотека-обертка над стандартным PDO PHP для простой, удобной работы с различными базами данных и с защитой от SQL инъекций " src="http://images.vfl.ru/ii/1594995195/b66fc16a/31100260.png
+  <img alt="DataBase logo" title="DataBase это Библиотека-обертка над стандартным PDO PHP для простой, удобной работы с различными базами данных и с защитой от SQL инъекций" src="http://images.vfl.ru/ii/1594995511/ead9bb36/31100317.png
+"/> 
 "/>
 </p>
 
