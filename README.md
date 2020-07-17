@@ -1,10 +1,41 @@
-### Почему DataBase?  
+### Оглавление
+* [Обзор DataBase](#Почему-DataBase?)
+* [Подключение](#Подключение)
+* [Заполнители](#Что-такое-заполнители?)
+* [Типы заполнителей](#Типы-заполнителей-DataBase)
+    * [?i (int)](#i--заполнитель-целого-числа) 
+    * [?d (double)](#d--заполнитель-числа-с-плавающей-точкой) 
+    * [?n (null)](#n--заполнитель-null-типа) 
+    * [?A* (ассоциативный массив)](#a--заполнитель-ассоциативного-множества-из-ассоциативного-массива-генерирующий-последовательность-пар-ключ--значение) 
+    * [?A[?n, ?s, ?i, ?d, ...] (ассоциативный массив)](#an-s-i-d---заполнитель-ассоциативного-множества-с-явным-указанием-типа-и-количества-аргументов-генерирующий-последовательность-пар-ключ--значение) 
+    * [?a* (массив)](#a--заполнитель-множества-из-простого-или-также-ассоциативного-массива-генерирующий-последовательность-значений) 
+    * [?a[?n, ?s, ?i, ?d, ...] (массив)](#an-s-i-d---заполнитель-множества-с-явным-указанием-типа-и-количества-аргументов-генерирующий-последовательность-значений) 
+    * [?v* (VALUES)](#v--заполнитель-values-из-простого-или-также-ассоциативного-двумерного-массива-генерирующий-последовательность-значений-для-заполнения-values) 
+    * [?v[?n, ?s, ?i, ?d, ...] (VALUES)](#vn-s-i-d---заполнитель-множества-из-двумерного-массива-с-явным-указанием-типа-и-количества-аргументов-генерирующий-последовательность-значений-для-заполнения-values) 
+    * [?w* (WHERE)](#w--заполнитель-ассоциативного-множества-из-ассоциативного-массива-генерирующий-последовательность-пар-ключ--значение-с-разделителем-and) 
+    * [?w[?n, ?s, ?i, ?d, ...] (WHERE)](#wn-s-i-d---заполнитель-ассоциативного-множества-с-явным-указанием-типа-и-количества-аргументов-генерирующий-последовательность-пар-ключ--значение-с-разделителем-and) 
+* [Дополнительные методы](#методы-orm)
+    * [getQueryString()](#getquerystring)
+    * [rows($sql, $args = [], $fetchMode = PDO::FETCH_ASSOC)](#rowssql-args---fetchmode--pdofetch_assoc--array--false)
+    * [row($sql, $args = [], $fetchMode = PDO::FETCH_ASSOC)](#rowsql-args---fetchmode--pdofetch_assoc--array--false)
+    * [getById($table, $id, $fetchMode = PDO::FETCH_ASSOC)](#getbyidtable-id-fetchmode--pdofetch_assoc--array--false)
+    * [count($sql, $args = [])](#countsql-args----int--false)
+    * [insert($table, $data)](#inserttable-data--int--false)
+    * [update($table, $data, $where = [])](#updatetable-data-where----int--false)
+    * [delete($table, $where, $limit = -1)](#deletetable-where-limit---1--int--false)
+    * [deleteAll($table)](#deletealltable--int--false)
+    * [deleteById($table, $id)](#deletebyidtable-id--int--false)
+    * [deleteByIds($table, $column, $ids)](#deletebyidstable-column-ids--int--false)
+    * [truncate($table)](#truncatetable--int--false)
+
+
+### Почему DataBase?
 
 * Универсальность - Благодаря тому, что DataBase основана на модуле PHP-PDO, её можно
 использовать с различными БД.
 * Простота - DataBase включает в себя удобные
 заполнители, которы серьёзно упрощают работу с SQL запросами. Также частые
-SQL запросы уже составлены и вынесены в качестве методов.
+SQL запросы уже составлены и вынесены в виде методов.
 ### Функционал
 В библиотеке поддерживается:
  * Все методы [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
@@ -14,30 +45,33 @@ SQL запросы уже составлены и вынесены в качес
 ## Подключение
 ### Используя composer
 ```
-composer require digitalstars/simplevk
+composer require digitalstars/database
 ```
 ```php
 require_once "vendor/autoload.php"; //Подключаем библиотеку
 ```
 ### Вручную
 1. Скачать последний релиз
-2. Подключить autoload.php. Вот так будет происходить подключение, если ваш скрипт находится в той же папке, что и папка simplevk-master
+2. Подключить autoload.php. Вот так будет происходить подключение, если ваш скрипт находится в той же папке, что и папка database-master
 ```php
-require_once "simplevk-master/autoload.php"; //Подключаем библиотеку
+require_once "database-master/autoload.php"; //Подключаем библиотеку
 ```
-# Что такое заполнители?
----
+## Что такое заполнители?
 
-**Заполнители** — специальные типизированные маркеры, которые пишутся в строке SQL запроса вместо явных значений (параметров запроса). А сами значения передаются "позже", в качестве последующих аргументов основного метода, выполняющего SQL-запрос:
+**Заполнители** — специальные типизированные маркеры, которые пишутся в строке SQL запроса вместо явных значений (параметров запроса). А сами значения передаются "позже", в массиве в следующем аргументе таких методов как:
+ * exec()
+ * query()
+ * prepare()
+А том как работают эти методы можно посмотреть в [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php).
 
 ```php
 <?php
 // Предположим, что установили библиотеку через composer 
 require  './vendor/autoload.php';
-// Алиас для краткости 
-use DigitalStars\database\DataBase;
+// Пространство имён
+use DigitalStars\DataBase;
 
-// Соединение с СУБД SqlIte и получение объекта-"обертки" над "родным" PHP-PDO
+// Соединение с СУБД SqlIte и получение объекта-библиотеки, который включает в себя все методы PHP-PDO
 $db = new DataBase("sqlite:./test.sqlite");
 
 // Получение объекта результата PDOStatement
@@ -52,8 +86,7 @@ echo $db->getQueryString();
 
 Параметры SQL-запроса, прошедшие через заполнители, обрабатываются специальными функциями экранирования, в зависимости от типа заполнителей. Т.е. вам теперь нет необходимости заключать переменные в функции экранирования типа `quote()` или приводить их к числовому типу, как это было раньше
 
-Типы заполнителей и типы параметров SQL-запроса
----
+### Типы заполнителей и типы параметров SQL-запроса
 
 Типы заполнителей и их предназначение описываются ниже. Прежде чем знакомиться с типами заполнителей, необходимо понять как работает механизм библиотеки DataBase.
 
@@ -109,8 +142,7 @@ SELECT 123
 * Тип `null` (заполнитель `?n`) просто вставляет NULL в место заполнителя,
 входные параметры не требуются
 
-Типы заполнителей DataBase
----
+## Типы заполнителей DataBase
 
 ### `?i` — заполнитель целого числа
 
@@ -410,7 +442,7 @@ SELECT * FROM `users` WHERE `users`.`name` IN ("Василий") OR `id` IN (2, 
  
 Пример:
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 
 $db = new DataBase('sqlite:./test.sqlite');
 // Вернёт PDOStatement
@@ -426,11 +458,11 @@ if ($stm->execute([200]))
 ```
 
 ## Дополнительные методы
-### getQueryString()
+### getQueryString() : sql (string)
 
 Метод возвращает последний собранный запрос, в котором были заполнители
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 
 $db = new DataBase('sqlite:./test.sqlite');
 $stm = $db->prepare("SELECT * FROM ?f WHERE name = ?s AND count = ?", ['test', 'имя']);
@@ -449,7 +481,7 @@ SELECT * FROM `test` WHERE name = 'имя' AND count = ?
 Соберёт `$sql` запрос по заполнителям из `$args` и вернёт все строки (вызов `PDOStatement::fetchAll`) с режимом выборки `$fetchMode`. Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $rows = $db->rows("SELECT * FROM users WHERE age = ?i", [30]);
@@ -461,7 +493,7 @@ $rows = $db->rows("SELECT * FROM users WHERE age = ?i", [30]);
 Соберёт `$sql` запрос по заполнителям из `$args` и вернёт строку (вызов `PDOStatement::fetch`) с режимом выборки `$fetchMode`. Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $row = $db->row("SELECT * FROM users WHERE age = ?i", [30]);
@@ -473,7 +505,7 @@ $row = $db->row("SELECT * FROM users WHERE age = ?i", [30]);
 Вернёт строку (вызов `PDOStatement::fetch`) с режимом выборки `$fetchMode` из таблицы `$table` где `id = $id`. Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $row = $db->getById('users', 6);
@@ -486,7 +518,7 @@ $row = $db->getById('users', 6);
 Соберёт `$sql` запрос по заполнителям из `$args` и вернёт количество затронутых строк (вызов метода `PDOStatement::rowCount`)
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $row = $db->count('SELECT * FROM users WHERE name = ?s', ['Василий']);
@@ -498,7 +530,7 @@ $row = $db->count('SELECT * FROM users WHERE name = ?s', ['Василий']);
 Вставит в таблицу `$table` значения из массива `$data`, в котором ключи - названия полей, значения - значения полей. Вернёт `id` добавленной записи
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $last_id = $db->insert('users', [
@@ -520,7 +552,7 @@ $last_id = $db->insert('users', [
 > Если не передан `$where`, то будут затронуты все строки
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $count = $db->update('users', [
@@ -543,7 +575,7 @@ $count = $db->update('users', [
 > Если не передан `$limit` или равен `-1`, то будут удален все выбранные записи
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $count = $db->delete('users', [
@@ -560,7 +592,7 @@ $count = $db->delete('users', [
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $count = $db->deleteAll('users');
@@ -575,7 +607,7 @@ $count = $db->deleteAll('users');
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $count = $db->deleteById('users', 6);
@@ -592,7 +624,7 @@ $count = $db->deleteById('users', 6);
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $count = $db->deleteByIds('users', 'status', [6, 8, 10]);
@@ -609,7 +641,7 @@ $count = $db->deleteByIds('users', 'status', [6, 8, 10]);
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\database\DataBase;
+use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
 
 $count = $db->truncate('users');
