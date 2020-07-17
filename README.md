@@ -503,6 +503,10 @@ $row = $db->row("SELECT * FROM users WHERE age = ?i", [30]);
 
 Вернёт строку (вызов `PDOStatement::fetch`) с режимом выборки `$fetchMode` из таблицы `$table` где `id = $id`. Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
 
+> Если `$id` - число, то вернёт запись, где `id = $id`
+
+> Если `$id` - массив, то вернёт запись по WHERE, где ключи массив - названия полей, значения массива - значения полей
+
 ```php
 use DigitalStars\DataBase;
 $db = new DataBase('sqlite:./test.sqlite');
@@ -510,6 +514,10 @@ $db = new DataBase('sqlite:./test.sqlite');
 $row = $db->getById('users', 6);
 // Выполнит SELECT * FROM `users` WHERE id = 6
 // Вернёт false или строку таблицы, где id = 6
+
+$row = $db->getById('users', ['user_id' => 12, 'status' => 5]);
+// Выполнит SELECT * FROM `users` WHERE user_id = '12' AND status = '5'
+// Вернёт false или строку таблицы, где user_id = 12 или status = 5
 ```
 
 ### count($sql, $args = []) : int | false
