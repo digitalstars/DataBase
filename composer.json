@@ -1,5 +1,5 @@
 {
-  "name": "digitalstars",
+  "name": "digitalstars/database",
   "description": "Library for easy work with databases",
   "license": "MIT",
   "minimum-stability": "stable",
@@ -19,7 +19,7 @@
   },
   "autoload": {
     "psr-4": {
-      "DigitalStars\\database\\": "src/"
+      "DigitalStars\\DataBase\\": "src/"
     }
   }
 }
