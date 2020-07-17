@@ -45,7 +45,10 @@ class DataBase extends \PDO {
     }
 
     public function getById($table, $id, $fetchMode = PDO::FETCH_ASSOC) {
-        $result = $this->query("SELECT * FROM ?f WHERE id = ?i", [$table, $id]);
+        if (is_array($id))
+            $result = $this->query("SELECT * FROM ?f WHERE ?ws", [$table, $id]);
+        else
+            $result = $this->query("SELECT * FROM ?f WHERE id = ?i", [$table, $id]);
         return $result !== false ? $result->fetch($fetchMode) : $result;
     }
 
