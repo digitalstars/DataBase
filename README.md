@@ -9,6 +9,10 @@
 <img src="https://img.shields.io/github/license/digitalstars/DataBase" alt="License">
 </p> 
 
+#### Комьюнити:
+[Беседа ВК (Помощь)](https://vk.me/join/AJQ1dzQRUQxtfd7zSm4STOmt) | [Беседа ВК (Лог обновлений)](https://vk.me/join/AJQ1d37aORgoMQyc_BDK3Ka1)
+--- | --- |
+
 ### Оглавление
 * [Подключение](#Подключение)
 * [Заполнители](#что-такое-заполнители)
