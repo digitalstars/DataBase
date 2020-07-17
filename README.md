@@ -53,7 +53,7 @@ require_once "vendor/autoload.php"; //Подключаем библиотеку
 1. Скачать последний релиз
 2. Подключить autoload.php. Вот так будет происходить подключение, если ваш скрипт находится в той же папке, что и папка database-master
 ```php
-require_once "database-master/autoload.php"; //Подключаем библиотеку
+require_once "DataBase-master/autoload.php"; //Подключаем библиотеку
 ```
 ## Что такое заполнители?
 
