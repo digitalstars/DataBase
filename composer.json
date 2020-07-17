@@ -1,5 +1,5 @@
 {
-  "name": "digitalstars/database",
+  "name": "digitalstars",
   "description": "Library for easy work with databases",
   "license": "MIT",
   "minimum-stability": "stable",

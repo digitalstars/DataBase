@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalStars\DataBase;
+namespace DigitalStars;
 
 use PDO;
 
