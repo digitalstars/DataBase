@@ -405,7 +405,8 @@ SQL-запрос после преобразования шаблона:
 SELECT * FROM `users` WHERE `id` = 1
 ```
 
-##### ---
+---
+
 ```php
  $db->query(
     'SELECT id, adress FROM `users` WHERE `name` IN (?a["?s", "?s", "?s"])',
