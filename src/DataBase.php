@@ -59,8 +59,11 @@ class DataBase extends \PDO {
         return $result !== false ? $this->lastInsertId() : $result;
     }
 
-    public function update($table, $data, $where) {
-        return $this->exec("UPDATE ?f SET ?As WHERE ?ws", [$table, $data, $where]);
+    public function update($table, $data, $where = []) {
+        if (empty($where))
+            return $this->exec("UPDATE ?f SET ?As WHERE 1", [$table, $data]);
+        else
+            return $this->exec("UPDATE ?f SET ?As WHERE ?ws", [$table, $data, $where]);
     }
 
     public function delete($table, $where, $limit = 1) {
