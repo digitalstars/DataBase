@@ -1,3 +1,15 @@
+<p align="center">
+  <img alt="DataBase logo" title="DataBase это Библиотека-обертка над стандартным PDO PHP для простой, удобной работы с различными базами данных и с защитой от SQL инъекций " src="http://images.vfl.ru/ii/1594995195/b66fc16a/31100260.png
+"/>
+</p>
+
+<p align="center">
+<img src="https://img.shields.io/packagist/php-v/digitalstars/DataBase" alt="php version">
+<img src="https://img.shields.io/packagist/dt/digitalstars/DataBase" alt="downloads">
+<img src="https://img.shields.io/github/repo-size/digitalstars/DataBase" alt="repo size">
+<img src="https://img.shields.io/github/license/digitalstars/DataBase" alt="License">
+</p> 
+
 ### Оглавление
 * [Подключение](#Подключение)
 * [Заполнители](#что-такое-заполнители)
