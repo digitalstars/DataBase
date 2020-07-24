@@ -331,13 +331,13 @@ UPDATE test SET `count` = 30, `title` = 'Какой-то заголовок', `a
  правила преобразования и экранирования такие же, как и для одиночных скалярных типов, описанных выше.
 
 ```php
-$db->query('INSERT INTO test (count, amount, status) VALUE (?ai)', [
+$db->query('INSERT INTO test (count, amount, status) VALUES (?ai)', [
     [30, 1000, 66]
 ]);
 ```
   SQL-запрос после преобразования шаблона:
 ```sql
-INSERT INTO test (count, amount, status) VALUE (30, 1000, 66)
+INSERT INTO test (count, amount, status) VALUES (30, 1000, 66)
 ```
 
 ### `?a[?n, ?s, ?i, ?d, ...]` — заполнитель множества с явным указанием типа и количества аргументов, генерирующий последовательность значений
@@ -345,7 +345,7 @@ INSERT INTO test (count, amount, status) VALUE (30, 1000, 66)
 Пример: `"val_1", "val_2", ..., "val_N"`
 
 ```php
-$db->query('INSERT INTO test (count, title, amount) VALUE (?a[?i, ?s, ?d])', [
+$db->query('INSERT INTO test (count, title, amount) VALUES (?a[?i, ?s, ?d])', [
     [30.25, 'Какой-то заголовок', '66.55']
 ]);
 ```
