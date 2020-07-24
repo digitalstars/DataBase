@@ -608,10 +608,7 @@ $row = $db->count('SELECT * FROM users WHERE name = ?s', ['Василий']);
 Вставит в таблицу `$table` значения из массива `$data`, в котором ключи - названия полей, значения - значения полей. Вернёт `id` добавленной записи
 
 ```php
-$last_id = $db->insert('users', [
-    'name' => 'Иван',
-    'age' => 30
-]);
+$last_id = $db->insert('users', ['name' => 'Иван', 'age' => 30]);
 // Выполнит запрос: INSERT INTO `users` (`name`, `age`) VALUES ('Иван', '30')
 // Вернёт false или ID добавленной записи
 ```
@@ -650,9 +647,7 @@ $count = $db->update('users',
 > Если не передан `$limit` или равен `-1`, то будут удален все выбранные записи
 
 ```php
-$count = $db->delete('users', [
-    'id' => 6,
-    'status' => 9], 5);
+$count = $db->delete('users', ['id' => 6, 'status' => 9], 5);
 // Выполнит запрос: DELETE FROM `users` WHERE `id` = '6' AND `status` = '9' LIMIT 5
 // Вернёт false или количество затронутых строк
 ```
