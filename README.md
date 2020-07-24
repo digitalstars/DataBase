@@ -84,7 +84,7 @@ $login = ''; // Логин
 $pass = ''; // Пароль
 $options = []; // Массив ключ=>значение специфичных для драйвера настроек подключения. 
 
-new DB($dsn, $login, $pass, $options);
+$db = new DB($dsn, $login, $pass, $options);
 ```
 
 #### Пример подключения к MySQL
@@ -522,6 +522,8 @@ SELECT * FROM `users` WHERE `users`.`name` IN ("Василий") OR `id` IN (2, 
  
 Пример:
 ```php
+<?php
+require_once "vendor/autoload.php"; //Подключаем библиотеку
 use DigitalStars\DataBase\DB;
 
 $db = new DB('sqlite:./test.sqlite');
@@ -542,9 +544,6 @@ if ($stm->execute([200]))
 
 Метод возвращает последний собранный запрос, в котором были заполнители
 ```php
-use DigitalStars\DataBase\DB;
-
-$db = new DB('sqlite:./test.sqlite');
 $stm = $db->prepare("SELECT * FROM ?f WHERE name = ?s AND count = ?", ['test', 'имя']);
 
 echo $db->getQueryString();
@@ -562,9 +561,6 @@ SELECT * FROM `test` WHERE name = 'имя' AND count = ?
 > Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $rows = $db->rows("SELECT * FROM users WHERE age = ?i", [30]);
 // Вернёт false или все строки таблицы, где age = 30
 ```
@@ -575,9 +571,6 @@ $rows = $db->rows("SELECT * FROM users WHERE age = ?i", [30]);
 >Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $row = $db->row("SELECT * FROM users WHERE age = ?i", [30]);
 // Вернёт false или строку таблицы, где age = 30
 ```
@@ -592,9 +585,6 @@ $row = $db->row("SELECT * FROM users WHERE age = ?i", [30]);
 * Если `$id` - массив, то вернёт запись по WHERE, где ключи массив - названия полей, значения массива - значения полей
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $row = $db->getById('users', 6);
 // Выполнит SELECT * FROM `users` WHERE id = 6
 // Вернёт false или строку таблицы, где id = 6
@@ -609,9 +599,6 @@ $row = $db->getById('users', ['user_id' => 12, 'status' => 5]);
 Соберёт `$sql` запрос по заполнителям из `$args` и вернёт количество затронутых строк (вызов метода `PDOStatement::rowCount`)
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $row = $db->count('SELECT * FROM users WHERE name = ?s', ['Василий']);
 // Вернёт false или количество строк таблицы users, в которых name = 'Василий'
 ```
@@ -621,9 +608,6 @@ $row = $db->count('SELECT * FROM users WHERE name = ?s', ['Василий']);
 Вставит в таблицу `$table` значения из массива `$data`, в котором ключи - названия полей, значения - значения полей. Вернёт `id` добавленной записи
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $last_id = $db->insert('users', [
     'name' => 'Иван',
     'age' => 30
@@ -643,15 +627,15 @@ $last_id = $db->insert('users', [
 > Если не передан `$where`, то будут затронуты все строки
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
-$count = $db->update('users', [
-    'name' => 'Иван',
-    'age' => 30],
+$count = $db->update('users', 
     [
-    'id' => 6,
-    'status' => 9]);
+        'name' => 'Иван',
+        'age' => 30
+    ],
+    [
+        'id' => 6,
+        'status' => 9
+    ]);
 // Выполнит запрос: UPDATE `users` SET `name` = 'Иван', `age` = '30' WHERE `id` = '6' AND `status` = '9'
 // Вернёт false или количество затронутых строк
 ```
@@ -666,9 +650,6 @@ $count = $db->update('users', [
 > Если не передан `$limit` или равен `-1`, то будут удален все выбранные записи
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $count = $db->delete('users', [
     'id' => 6,
     'status' => 9], 5);
@@ -683,9 +664,6 @@ $count = $db->delete('users', [
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $count = $db->deleteAll('users');
 // Выполнит запрос: DELETE FROM `users`
 // Вернёт false или количество затронутых строк
@@ -698,9 +676,6 @@ $count = $db->deleteAll('users');
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $count = $db->deleteById('users', 6);
 // Выполнит запрос: DELETE FROM `users` WHERE `id` = 6
 // Вернёт false или количество затронутых строк
@@ -715,9 +690,6 @@ $count = $db->deleteById('users', 6);
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $count = $db->deleteByIds('users', 'status', [6, 8, 10]);
 // Выполнит запрос: DELETE FROM `users` WHERE `status` IN ('6', '8', '10')
 // Вернёт false или количество затронутых строк
@@ -732,9 +704,6 @@ $count = $db->deleteByIds('users', 'status', [6, 8, 10]);
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\DataBase\DB;
-$db = new DB('sqlite:./test.sqlite');
-
 $count = $db->truncate('users');
 // Выполнит запрос: TRUNCATE TABLE `users`
 // Вернёт false или количество затронутых строк
