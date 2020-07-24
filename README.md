@@ -87,6 +87,8 @@ $options = []; // Массив ключ=>значение специфичных
 new DB($dsn, $login, $pass, $options);
 ```
 
+#### Пример подключения к MySQL
+
 ```php
 use DigitalStars\DataBase\DB;
 
@@ -112,7 +114,7 @@ $db = new DB("$db_type:host=$ip;dbname=$db_name", $login, $pass,
 // В этом примере, сразу после подключения выполнится SQL запрос "SET NAMES 'utf8'"
 ```
 
-#### Подключение к SQLite
+#### Пример подключение к SQLite
 
 ```php
 use DigitalStars\DataBase\DB;
