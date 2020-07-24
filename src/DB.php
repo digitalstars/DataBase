@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalStars;
+namespace DigitalStars\DataBase;
 
 use PDO;
 
-class DataBase extends \PDO {
+class DB extends \PDO {
     use Parser;
 
     public function __construct($dsn, $username = null, $passwd = null, $options = null) {

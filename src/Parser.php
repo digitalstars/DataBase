@@ -1,7 +1,7 @@
 <?php
 
 
-namespace DigitalStars;
+namespace DigitalStars\DataBase;
 
 
 trait Parser {

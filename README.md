@@ -13,6 +13,20 @@
 [Беседа ВК (Помощь)](https://vk.me/join/AJQ1dzQRUQxtfd7zSm4STOmt) | [Беседа ВК (Лог обновлений)](https://vk.me/join/AJQ1d37aORgoMQyc_BDK3Ka1)
 --- | --- |
 
+### Почему DataBase?
+
+* Универсальность — Благодаря тому, что DataBase основана на модуле `PHP-PDO`, её можно
+использовать с различными БД.
+* Простота — DataBase включает в себя удобные
+заполнители, которы серьёзно упрощают работу с SQL запросами. Также частые
+SQL запросы уже составлены и вынесены в виде методов.
+* При использовании Заполнителей, вы полностью защищены от `SQL инъекций`.
+### Функционал
+В библиотеке поддерживается:
+ * Все методы [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
+ * Свои заполнители
+ * ORM конструкции
+
 ### Оглавление
 * [Подключение](#Подключение)
 * [Заполнители](#что-такое-заполнители)
@@ -42,21 +56,6 @@
     * [deleteByIds($table, $column, $ids)](#deletebyidstable-column-ids--int--false)
     * [truncate($table)](#truncatetable--int--false)
 
-
-### Почему DataBase?
-
-* Универсальность — Благодаря тому, что DataBase основана на модуле `PHP-PDO`, её можно
-использовать с различными БД.
-* Простота — DataBase включает в себя удобные
-заполнители, которы серьёзно упрощают работу с SQL запросами. Также частые
-SQL запросы уже составлены и вынесены в виде методов.
-* При использовании Заполнителей, вы полностью защищены от `SQL инъекций`.
-### Функционал
-В библиотеке поддерживается:
- * Все методы [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
- * Свои заполнители
- * ORM конструкции
-
 ## Подключение
 ### Используя composer
 ```
@@ -72,6 +71,59 @@ require_once "vendor/autoload.php"; //Подключаем библиотеку
 ```php
 require_once "DataBase-master/autoload.php"; //Подключаем библиотеку
 ```
+
+### Подключение к СуБД
+
+Синтаксис конструктора базового класса такой же, как и у PHP-PDO
+
+```php
+use DigitalStars\DataBase\DB;
+
+$dsn = ''; // Имя источника данных или DSN, содержащее информацию, необходимую для подключения к базе данных. 
+$login = ''; // Логин
+$pass = ''; // Пароль
+$options = []; // Массив ключ=>значение специфичных для драйвера настроек подключения. 
+
+new DB($dsn, $login, $pass, $options);
+```
+
+```php
+use DigitalStars\DataBase\DB;
+
+$db_type = 'mysql'; // Это может быть mysql, sybase или любой другой, в зависимости от вашей СуБД
+$db_name = 'test'; // Имя БД
+$login = 'root'; // Логин
+$pass = 'pass'; // Пароль
+$ip = 'localhost'; // Адрес
+
+// С портом по умолчанию
+$db = new DB("$db_type:host=$ip;dbname=$db_name", $login, $pass);
+
+// С нестандартным портом
+$port = 1234;
+$db = new DB("$db_type:host=$ip;port=$port;dbname=$db_name", $login, $pass);
+
+// Подключение с выбором кодировки UTF8
+$db = new DB("$db_type:host=$ip;dbname=$db_name;charset=UTF8", $login, $pass);
+// Или вот так
+$db = new DB("$db_type:host=$ip;dbname=$db_name", $login, $pass,
+    [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"]
+);
+// В этом примере, сразу после подключения выполнится SQL запрос "SET NAMES 'utf8'"
+```
+
+#### Подключение к SQLite
+
+```php
+use DigitalStars\DataBase\DB;
+
+$db_type = 'sqlite';
+$db_path = 'path/to/file/test.sqlite'; // Путь к файлу с базой данных
+
+// Подключение
+$db = new DB("$db_type:$db_path");
+```
+
 ## Что такое заполнители?
 
 **Заполнители** — специальные типизированные маркеры, которые пишутся в строке SQL запроса вместо явных значений (параметров запроса), чем упрощают читаемость кода и защищают от SQL инъекций.  
@@ -84,10 +136,10 @@ require_once "DataBase-master/autoload.php"; //Подключаем библио
 ```php
 <?php
 require 'vendor/autoload.php';
-use DigitalStars\DataBase;
+use DigitalStars\DataBase\DB;
 
 // Соединение с СУБД SQLite и получение объекта, который включает в себя все методы PHP-PDO и библиотеки
-$db = new DataBase("sqlite:./test.sqlite");
+$db = new DB("sqlite:./test.sqlite");
 
 // Получение объекта результата PDOStatement
 $result = $db->query("SELECT * FROM users WHERE name = ?s AND age = ?i", ["Василий", 30]);
@@ -312,8 +364,12 @@ INSERT INTO test (count, title, amount) VALUES (30, 'Какой-то загол�
  правила преобразования и экранирования такие же, как и для одиночных скалярных типов, описанных выше.
 
 ```php
-$db->query('INSERT INTO test (count, amount, status) VALUES (?ai)', [
-    [[30, 1000, 66], [41, 2500, 77], [25, 3211, 24]]
+$db->query('INSERT INTO test (count, amount, status) VALUES (?vi)', [
+    [
+        [30, 1000, 66],
+        [41, 2500, 77],
+        [25, 3211, 24]
+    ]
 ]);
 ```
   SQL-запрос после преобразования шаблона:
@@ -326,8 +382,12 @@ INSERT INTO test (count, amount, status) VALUES (30, 1000, 66), (41, 2500, 77), 
 Пример: `("val_1", "val_2", ..., "val_N"), ("val_1", "val_2", ..., "val_N"), ...`
 
 ```php
-$db->query('INSERT INTO test (count, title, amount) VALUES (?a[?i, ?s, ?d])', [
-    [[30.25, 'Какой-то заголовок', '66.55'], [40, 'Какой-то заголовок 2', '77'], ['21.55', 'Какой-то заголовок 3', 66.88]]
+$db->query('INSERT INTO test (count, title, amount) VALUES (?v[?i, ?s, ?d])', [
+    [
+        [30.25, 'Какой-то заголовок', '66.55'],
+        [40, 'Какой-то заголовок 2', '77'],
+        ['21.55', 'Какой-то заголовок 3', 66.88]
+    ]
 ]);
 ```
 SQL-запрос после преобразования шаблона:
@@ -460,9 +520,9 @@ SELECT * FROM `users` WHERE `users`.`name` IN ("Василий") OR `id` IN (2, 
  
 Пример:
 ```php
-use DigitalStars\DataBase;
+use DigitalStars\DataBase\DB;
 
-$db = new DataBase('sqlite:./test.sqlite');
+$db = new DB('sqlite:./test.sqlite');
 // Вернёт PDOStatement
 $stm = $db->prepare("SELECT * FROM ?f WHERE name = ?s AND count = ?", ['test', 'имя']);
 
@@ -480,9 +540,9 @@ if ($stm->execute([200]))
 
 Метод возвращает последний собранный запрос, в котором были заполнители
 ```php
-use DigitalStars\DataBase;
+use DigitalStars\DataBase\DB;
 
-$db = new DataBase('sqlite:./test.sqlite');
+$db = new DB('sqlite:./test.sqlite');
 $stm = $db->prepare("SELECT * FROM ?f WHERE name = ?s AND count = ?", ['test', 'имя']);
 
 echo $db->getQueryString();
@@ -500,8 +560,8 @@ SELECT * FROM `test` WHERE name = 'имя' AND count = ?
 > Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $rows = $db->rows("SELECT * FROM users WHERE age = ?i", [30]);
 // Вернёт false или все строки таблицы, где age = 30
@@ -513,8 +573,8 @@ $rows = $db->rows("SELECT * FROM users WHERE age = ?i", [30]);
 >Подробнее о режимах выборки [PHP-PDO](https://www.php.net/manual/ru/book.pdo.php)
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $row = $db->row("SELECT * FROM users WHERE age = ?i", [30]);
 // Вернёт false или строку таблицы, где age = 30
@@ -530,8 +590,8 @@ $row = $db->row("SELECT * FROM users WHERE age = ?i", [30]);
 * Если `$id` - массив, то вернёт запись по WHERE, где ключи массив - названия полей, значения массива - значения полей
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $row = $db->getById('users', 6);
 // Выполнит SELECT * FROM `users` WHERE id = 6
@@ -547,8 +607,8 @@ $row = $db->getById('users', ['user_id' => 12, 'status' => 5]);
 Соберёт `$sql` запрос по заполнителям из `$args` и вернёт количество затронутых строк (вызов метода `PDOStatement::rowCount`)
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $row = $db->count('SELECT * FROM users WHERE name = ?s', ['Василий']);
 // Вернёт false или количество строк таблицы users, в которых name = 'Василий'
@@ -559,8 +619,8 @@ $row = $db->count('SELECT * FROM users WHERE name = ?s', ['Василий']);
 Вставит в таблицу `$table` значения из массива `$data`, в котором ключи - названия полей, значения - значения полей. Вернёт `id` добавленной записи
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $last_id = $db->insert('users', [
     'name' => 'Иван',
@@ -581,8 +641,8 @@ $last_id = $db->insert('users', [
 > Если не передан `$where`, то будут затронуты все строки
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $count = $db->update('users', [
     'name' => 'Иван',
@@ -604,8 +664,8 @@ $count = $db->update('users', [
 > Если не передан `$limit` или равен `-1`, то будут удален все выбранные записи
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $count = $db->delete('users', [
     'id' => 6,
@@ -621,8 +681,8 @@ $count = $db->delete('users', [
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $count = $db->deleteAll('users');
 // Выполнит запрос: DELETE FROM `users`
@@ -636,8 +696,8 @@ $count = $db->deleteAll('users');
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $count = $db->deleteById('users', 6);
 // Выполнит запрос: DELETE FROM `users` WHERE `id` = 6
@@ -653,8 +713,8 @@ $count = $db->deleteById('users', 6);
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $count = $db->deleteByIds('users', 'status', [6, 8, 10]);
 // Выполнит запрос: DELETE FROM `users` WHERE `status` IN ('6', '8', '10')
@@ -670,8 +730,8 @@ $count = $db->deleteByIds('users', 'status', [6, 8, 10]);
 > **Внимание!** Если функция отработала без ошибок, но затронула `0 строк` - она вернёт `0`. Что при нестрогой проверке приведётся к `false`
 
 ```php
-use DigitalStars\DataBase;
-$db = new DataBase('sqlite:./test.sqlite');
+use DigitalStars\DataBase\DB;
+$db = new DB('sqlite:./test.sqlite');
 
 $count = $db->truncate('users');
 // Выполнит запрос: TRUNCATE TABLE `users`
