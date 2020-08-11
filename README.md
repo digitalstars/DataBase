@@ -366,7 +366,7 @@ INSERT INTO test (count, title, amount) VALUES (30, 'Какой-то загол�
  правила преобразования и экранирования такие же, как и для одиночных скалярных типов, описанных выше.
 
 ```php
-$db->query('INSERT INTO test (count, amount, status) VALUES (?vi)', [
+$db->query('INSERT INTO test (count, amount, status) VALUES ?vi', [
     [
         [30, 1000, 66],
         [41, 2500, 77],
@@ -384,7 +384,7 @@ INSERT INTO test (count, amount, status) VALUES (30, 1000, 66), (41, 2500, 77), 
 Пример: `("val_1", "val_2", ..., "val_N"), ("val_1", "val_2", ..., "val_N"), ...`
 
 ```php
-$db->query('INSERT INTO test (count, title, amount) VALUES (?v[?i, ?s, ?d])', [
+$db->query('INSERT INTO test (count, title, amount) VALUES ?v[?i, ?s, ?d]', [
     [
         [30.25, 'Какой-то заголовок', '66.55'],
         [40, 'Какой-то заголовок 2', '77'],
