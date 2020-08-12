@@ -223,8 +223,8 @@ SELECT 123
 > File >> Settings... >> Tools >> Database >> User Parameters
 
 Затем в окошке "Parameter patterns" нужно добавить следующие 2 шаблона и поставить обе галочки "In scripts" и "In literals":
-* \?[aAvw]\[.*?\]
-* \?[aAvw]?[sSidnf]
+* `\?[aAvw]\[.*?\]`
+* `\?[aAvw]?[sSidnf]`
 
 Окно настройки должно выглядеть следующим образом
 <p align="center">
