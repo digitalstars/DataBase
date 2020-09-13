@@ -8,6 +8,10 @@ class DB extends \PDO {
     use Parser;
 
     public function __construct($dsn, $username = null, $passwd = null, $options = null) {
+        if (is_array($options))
+            $options = array_merge([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION], $options);
+        else
+            $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
         parent::__construct($dsn, $username, $passwd, $options);
     }
 
