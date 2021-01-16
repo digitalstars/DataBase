@@ -111,10 +111,13 @@ $db = new DB("$db_type:host=$ip;port=$port;dbname=$db_name", $login, $pass);
 
 // Подключение с выбором кодировки UTF8
 $db = new DB("$db_type:host=$ip;dbname=$db_name;charset=UTF8", $login, $pass);
-// Или вот так
-$db = new DB("$db_type:host=$ip;dbname=$db_name", $login, $pass,
-    [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"]
-);
+
+// Или вот так (советуем использовать этот вариант)
+$db = new DB("$db_type:host=$ip;dbname=$db_name;", $login, $pass, [
+        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'",
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+]);
 // В этом примере, сразу после подключения выполнится SQL запрос "SET NAMES 'utf8'"
 ```
 
