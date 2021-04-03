@@ -11,7 +11,7 @@ class DB extends \PDO {
 
     public function __construct($dsn, $username = null, $passwd = null, $options = null) {
         if (is_array($options))
-            $options = array_merge([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION], $options);
+            $options = array_replace([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION], $options);
         else
             $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
         $this->dsn = $dsn;
