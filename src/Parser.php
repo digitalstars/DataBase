@@ -40,8 +40,7 @@ trait Parser {
             case "S":
                 $is_like_escaping = true;
             case 's':
-                $value = $this->getValueStringType($value);
-                return isset($is_like_escaping) ? $this->escapeLike($value) : $this->realEscapeString($value);
+                return $this->getValueStringType($value, isset($is_like_escaping));
             case 'i':
                 return $this->getValueIntType($value);
             case 'd':
@@ -88,7 +87,7 @@ trait Parser {
                 $value[$key] = $this->getValueFloatType($val);
         else if ($symbol[2] == 's')
             foreach ($value as $key => $val)
-                $value[$key] = $this->realEscapeString($this->getValueStringType($val));
+                $value[$key] = $this->getValueStringType($val);
         else if ($symbol[2] == 'f')
             foreach ($value as $key => $val)
                 $value[$key] = $this->escapeFieldName($val);
@@ -143,8 +142,11 @@ trait Parser {
     private function getValueIntType($value) {
         if (is_integer($value))
             return $value;
-        if (is_numeric($value) || is_null($value) || is_bool($value)) {
+        if (is_numeric($value) || is_bool($value)) {
             return (int)$value;
+        }
+        if (is_null($value)) {
+            return 'null';
         }
         throw new Exception($this->createErrorMessage('integer', $value));
     }
@@ -153,23 +155,28 @@ trait Parser {
         if (is_float($value)) {
             return $value;
         }
-        if (is_numeric($value) || is_null($value) || is_bool($value)) {
+        if (is_numeric($value) || is_bool($value)) {
             return (float)$value;
+        }
+        if (is_null($value)) {
+            return 'null';
         }
         throw new Exception($this->createErrorMessage('double', $value));
     }
 
-    private function getValueStringType($value) {
+    private function getValueStringType($value, $is_like_escaping = false) {
         // меняем поведение PHP в отношении приведения bool к string
         if (is_bool($value)) {
-            return (string)(int)$value;
+            $value = (string)(int)$value;
         }
-
-        if (!is_string($value) && !(is_numeric($value) || is_null($value))) {
+        if (is_null($value)) {
+            return 'null';
+        }
+        if (!is_scalar($value)) {
             throw new Exception($this->createErrorMessage('string', $value));
         }
 
-        return (string)$value;
+        return $is_like_escaping ? $this->escapeLike($value) : $this->realEscapeString($value);
     }
 
     private function escapeLike($var, $chars = "%_") {
