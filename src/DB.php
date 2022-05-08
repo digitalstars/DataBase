@@ -52,7 +52,7 @@ final class DB {
             try {
                 return $this->pdo->exec(count($args) === 0 ? $statement : $this->parse($statement, $args));
             } catch (PDOException $e) {
-                if ($i < 1 && ($e->errorInfo[1] === 2006 || $e->errorInfo[1] === 40001)) {
+                if ($i < 1 && ($e->errorInfo[1] === 2006 || $e->errorInfo[0] === 40001)) {
                     if ($e->errorInfo[1] === 2006) {
                         $this->__construct($this->dsn, $this->username, $this->passwd, $this->options);
                     }
@@ -81,7 +81,7 @@ final class DB {
 
                 return $this->pdo->query($statement);
             } catch (PDOException $e) {
-                if ($i < 1 && ($e->errorInfo[1] === 2006 || $e->errorInfo[1] === 40001)) {
+                if ($i < 1 && ($e->errorInfo[1] === 2006 || $e->errorInfo[0] === 40001)) {
                     if ($e->errorInfo[1] === 2006) {
                         $this->__construct($this->dsn, $this->username, $this->passwd, $this->options);
                     }
