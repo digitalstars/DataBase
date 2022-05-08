@@ -41,11 +41,11 @@ class DB extends \PDO
     }
 
     public function exec($statement, $args = []) {
-        for ($i = 0; $i < 5; ++$i) {
+        for ($i = 0; $i < 6; ++$i) {
             try {
                 return parent::exec(count($args) == 0 ? $statement : $this->parse($statement, $args));
             } catch (\PDOException $e) {
-                if ($i < 1 && ($e->errorInfo[1] == 2006 || $e->errorInfo[0] == 40001)) {
+                if ($i < 5 && ($e->errorInfo[1] == 2006 || $e->errorInfo[0] == 40001)) {
                     if ($e->errorInfo[1] == 2006)
                         parent::__construct($this->dsn, $this->username, $this->passwd, $this->options);
                     continue;
@@ -57,7 +57,7 @@ class DB extends \PDO
 
     public function query($statement, $args = [], $mode = null, $arg3 = null, $ctorargs = null) {
         $statement = (count($args) == 0 ? $statement : $this->parse($statement, $args));
-        for ($i = 0; $i < 5; ++$i) {
+        for ($i = 0; $i < 6; ++$i) {
             try {
                 if (!is_null($ctorargs))
                     return parent::query($statement, $mode, $arg3, $ctorargs);
@@ -67,7 +67,7 @@ class DB extends \PDO
                     return parent::query($statement, $mode);
                 return parent::query($statement);
             } catch (\PDOException $e) {
-                if ($i < 1 && ($e->errorInfo[1] == 2006 || $e->errorInfo[0] == 40001)) {
+                if ($i < 5 && ($e->errorInfo[1] == 2006 || $e->errorInfo[0] == 40001)) {
                     if ($e->errorInfo[1] == 2006)
                         parent::__construct($this->dsn, $this->username, $this->passwd, $this->options);
                     continue;
