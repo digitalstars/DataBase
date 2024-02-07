@@ -13,9 +13,9 @@ class DB {
     private array $options;
 
     public PDO $pdo;
-    
+
     public array $error_codes_to_repeat = [1040, 1159, 1160, 1161, 2002, 2003, 2006, 1213]; //1158
-    
+
     // 1040 - Too many connections
     // 1158 - [Network error] Got a packet bigger than 'max_allowed_packet' bytes
     // 1159 - [Network error] Got timeout reading communication packets
@@ -25,9 +25,15 @@ class DB {
     // 2003 - Can't connect to MySQL server
     // 2006 - MySQL server has gone away
     // 1213 - Deadlock found when trying to get lock
+    private string $dsn;
+    private ?string $username = null;
+    private ?string $passwd = null;
 
 
-    public function __construct(private string $dsn, private ?string $username = null, private ?string $passwd = null, ?array $options = null) {
+    public function __construct(string $dsn, ?string $username = null, ?string $passwd = null, ?array $options = null) {
+        $this->passwd = $passwd;
+        $this->username = $username;
+        $this->dsn = $dsn;
         if (is_array($options)) {
             $options = array_replace([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION], $options);
         }
@@ -71,7 +77,7 @@ class DB {
                     $func($statement . "\n-----------------");
                 }
             } catch (Exception $e) {}
-            
+
             try {
                 return $this->pdo->exec($statement);
             } catch (\PDOException $e) {
@@ -106,7 +112,7 @@ class DB {
                     $func($statement . "\n-----------------");
                 }
             } catch (Exception $e) {}
-            
+
             try {
                 if (!is_null($ctorargs)) {
                     $result = $this->pdo->query($statement, $mode, $arg3, $ctorargs);
@@ -117,7 +123,7 @@ class DB {
                 } else {
                     $result = $this->pdo->query($statement);
                 }
-                
+
                 return $result;
             } catch (PDOException $e) {
                 if($i <= 5) {
@@ -136,7 +142,7 @@ class DB {
             trigger_error($msg."\nНет кода ошибки. Попытка перезапуска запроса [{$i}/5]", E_USER_WARNING);
             return;
         }
-        
+
         if (in_array($e->errorInfo[1], $this->error_codes_to_repeat) || $e->errorInfo[0] == 40001) {
             if ($e->errorInfo[1] == 2006) {
                 trigger_error($msg."\nПопытка пересоздания конструктора и запуска запроса [{$i}/5]", E_USER_WARNING);
@@ -174,7 +180,7 @@ class DB {
         } else {
             $result = $this->query("SELECT * FROM ?f WHERE id = ?i", [$table, $id]);
         }
-        
+
         return $result !== false ? $result->fetch($fetchMode) : false;
     }
 
