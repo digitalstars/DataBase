@@ -51,7 +51,7 @@ class DB {
                     continue;
                 }
 
-                throw new \PDOException($e, $e->getCode(), $e);
+                throw new \PDOException($e->getMessage(), (int)$e->getCode(), $e->getPrevious());
             }
         }
     }
@@ -86,7 +86,7 @@ class DB {
                     continue;
                 }
 
-                throw new \PDOException($e, $e->getCode(), $e);
+                throw new \PDOException($e->getMessage(), (int)$e->getCode(), $e->getPrevious());
             }
         }
     }
@@ -131,7 +131,7 @@ class DB {
                     continue;
                 }
 
-                throw new PDOException($e, $e->getCode(), $e);
+                throw new \PDOException($e->getMessage(), (int)$e->getCode(), $e->getPrevious());
             }
         }
     }
