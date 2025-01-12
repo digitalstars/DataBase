@@ -14,6 +14,8 @@ class DB {
 
     public PDO $pdo;
 
+    private ?string $driver = null;
+
     public array $error_codes_to_repeat = [1040, 1159, 1160, 1161, 2002, 2003, 2006, 1213]; //1158
 
     // 1040 - Too many connections
@@ -25,15 +27,9 @@ class DB {
     // 2003 - Can't connect to MySQL server
     // 2006 - MySQL server has gone away
     // 1213 - Deadlock found when trying to get lock
-    private string $dsn;
-    private ?string $username = null;
-    private ?string $passwd = null;
 
 
-    public function __construct(string $dsn, ?string $username = null, ?string $passwd = null, ?array $options = null) {
-        $this->passwd = $passwd;
-        $this->username = $username;
-        $this->dsn = $dsn;
+    public function __construct(private string $dsn, private ?string $username = null, private ?string $passwd = null, ?array $options = null) {
         if (is_array($options)) {
             $options = array_replace([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION], $options);
         }
@@ -41,6 +37,7 @@ class DB {
             $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
         }
         $this->options = $options;
+        $this->driver = explode(':', $dsn, 2)[0] ?? null;
         for ($i = 1; $i <= 6; ++$i) {
             try {
                 $this->pdo = new PDO($this->dsn, $this->username, $this->passwd, $options);
@@ -51,7 +48,7 @@ class DB {
                     continue;
                 }
 
-                throw new \PDOException($e->getMessage(), (int)$e->getCode(), $e->getPrevious());
+                throw new PDOException($e->getMessage(), (int)$e->errorInfo[1], $e);
             }
         }
     }
@@ -86,7 +83,7 @@ class DB {
                     continue;
                 }
 
-                throw new \PDOException($e->getMessage(), (int)$e->getCode(), $e->getPrevious());
+                throw new PDOException($e->getMessage(), (int)$e->errorInfo[1], $e);
             }
         }
     }
@@ -131,19 +128,28 @@ class DB {
                     continue;
                 }
 
-                throw new \PDOException($e->getMessage(), (int)$e->getCode(), $e->getPrevious());
+                throw new PDOException($e->getMessage(), (int)$e->errorInfo[1], $e);
             }
         }
     }
 
     private function exceptionProcessing (\PDOException $e, int $i): void {
         $msg = $e->getMessage();
+
+        if($msg == 'could not find driver') {
+            $driver = $this->driver;
+            throw new Exception("Не установлен модуль $driver (could not find driver)", 0);
+        }
+
         if(!isset($e->errorInfo[1])) {
             trigger_error($msg."\nНет кода ошибки. Попытка перезапуска запроса [{$i}/5]", E_USER_WARNING);
             return;
         }
 
         if (in_array($e->errorInfo[1], $this->error_codes_to_repeat) || $e->errorInfo[0] == 40001) {
+            if($e->errorInfo[1] == 2002 && strpos($msg, 'No such file or directory') !== false) {
+                throw new Exception('База данных не найдена или недоступна (No such file or directory [2002])', 2002);
+            }
             if ($e->errorInfo[1] == 2006) {
                 trigger_error($msg."\nПопытка пересоздания конструктора и запуска запроса [{$i}/5]", E_USER_WARNING);
                 $this->__construct($this->dsn, $this->username, $this->passwd, $this->options);
